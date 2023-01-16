@@ -1,33 +1,32 @@
 const { ethers } = require("hardhat");
-const { WHITELIST_CONTRACT_ADDRESS, METADATA_URL } = require("../constants/index")
+const { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS  } = require("../constants")
 const {network} = require("hardhat")
 const {developmentChains} = require("../helper-hardhat-config.js")
 const {verify} = require("../utils/verify")
 
 async function main() {
-    const whitelistAddress = WHITELIST_CONTRACT_ADDRESS
-    const metadataURL = METADATA_URL
+    // Address of the Crypto Devs NFT contract that you deployed in the previous module
+    const cryptoDevsNFTContract = CRYPTO_DEVS_NFT_CONTRACT_ADDRESS;
+    
+    console.log("Deploying CryptoDevToken...")
+    const cryptoDevsTokenFactory = await ethers.getContractFactory("CryptoDevToken")
 
-    console.log("Deploying CryptoDevs...")
-    const cryptoDevsContractFactory = await ethers.getContractFactory("CryptoDevs")
-
-    const deployedCryptoDevsContract = await cryptoDevsContractFactory.deploy(
-      metadataURL,  
-      whitelistAddress        
+    const deployedCryptoDevsTokenContract = await cryptoDevsTokenFactory.deploy(
+      cryptoDevsNFTContract        
     )
 
-    await deployedCryptoDevsContract.deployTransaction.wait(10)
+    await deployedCryptoDevsTokenContract.deployTransaction.wait(10)
     // instead of .deployed()
 
-    console.log(`CryptoDevs Address: ${deployedCryptoDevsContract.address}`)
-    console.log("-------------------")
+    console.log(`CryptoDevsToken Address: ${deployedCryptoDevsTokenContract.address}`)
+    console.log("------------------------")
     
     //  2. Verify on Etherscan, if it's Goerli
-    const args = [metadataURL, whitelistAddress]
+    const args = [cryptoDevsNFTContract]
 
     if(!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
       console.log("Verifying on GoerliEtherscan...")
-      await verify(deployedCryptoDevsContract.address, args)
+      await verify(deployedCryptoDevsTokenContract.address, args)
       //  it takes address and args of the S/C as parameters
       console.log("-------------------------------")
     }

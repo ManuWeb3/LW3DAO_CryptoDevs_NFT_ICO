@@ -43,6 +43,15 @@ contract CryptoDevToken is ERC20, Ownable {
         require(msg.value >= _requiredAmount, "Ether sent is incorrect");
         // total tokens + amount <= 10000, otherwise revert the transaction
         uint256 amountWithDecimals = amount * 10**18;
+        
+        // below, I did not mint() inside constructor,
+        // hence, I do not own all the _totalSupply
+        // hence, _totalSupply is not set at deployment unlike ususal test-scenarios
+        // hence, it's zero for now and we restricted it / put a check using custom var: MAX_TOTAL_SUPPLY
+        // this scenario is different
+        // we're launching an ICO that's open to public for minting
+
+        // Private-owning/minting is different than public-minting/ICO
         require(
               (totalSupply() + amountWithDecimals) <= MAX_TOTAL_SUPPLY,
               "Exceeds the max total supply available."
